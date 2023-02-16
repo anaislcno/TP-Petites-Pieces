@@ -1,7 +1,8 @@
-import { ajoutListenersAvis } from "./avis.js";
+// Récupérer fonction de l'autre fichier 
+import { ajoutListenersAvis, ajoutListenerEnvoyerAvis } from "./avis.js";
 
 // Récupération des pièces depuis le fichier JSON
-const reponse = await fetch('pieces-autos.json');
+const reponse = await fetch('http://localhost:8081/pieces');
 const pieces = await reponse.json();
 
 // Fonction qui génère toute la page web
@@ -47,7 +48,9 @@ function genererPieces(pieces){
         pieceElement.appendChild(avisBouton);
 
     }
+    // Appeler fonction de l'autre fichier 
     ajoutListenersAvis();
+    ajoutListenerEnvoyerAvis();
 }
 
 // Premier affichage de la page 
