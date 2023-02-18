@@ -1,9 +1,19 @@
 // Récupérer fonction de l'autre fichier 
-import { ajoutListenersAvis, ajoutListenerEnvoyerAvis } from "./avis.js";
+import { ajoutListenersAvis, ajoutListenerEnvoyerAvis, afficherAvis, afficherGraphiqueAvis } from "./avis.js";
+// Récupération des pièces éventuellement stockées dans le localStorage
+let pieces = window.localStorage.getItem('pieces');
 
-// Récupération des pièces depuis le fichier JSON
-const reponse = await fetch('http://localhost:8081/pieces');
-const pieces = await reponse.json();
+if (pieces === null) {
+    // Récupération des pièces depuis le fichier JSON
+    const reponse = await fetch('http://localhost:8081/pieces');
+    const pieces = await reponse.json();
+    // Transformation des pièces en JSON
+    const valeurPieces = JSON.stringify(pieces);
+    // Stockage des informations dans le localStorage
+    window.localStorage.setItem("pieces", valeurPieces);
+}else{
+    pieces = JSON.parse(pieces);
+}
 
 // Fonction qui génère toute la page web
 function genererPieces(pieces){
@@ -55,6 +65,17 @@ function genererPieces(pieces){
 
 // Premier affichage de la page 
 genererPieces(pieces);
+
+for(let i = 0; i < pieces.length; i++) {
+    const id = pieces[i].id;
+    const avisJSON = window.localStorage.getItem(`avis-piece-${id}`);
+    const avis = JSON.parse(avisJSON);
+
+    if(avis !== null) {
+        const pieceElement = document.querySelector(`article[data-id="${id}"]`);
+        afficherAvis(pieceElement, avis)
+    }
+}
 
 //Gestion des boutons 
 const boutonTrier = document.querySelector(".btn-trier");
@@ -159,3 +180,11 @@ inputPrixMax.addEventListener('input', function(){
     document.querySelector(".fiches").innerHTML = "";
     genererPieces(piecesFiltrees);
 })
+
+// Ajout du listener pour mettre à jour des données du localStoage 
+const boutonMAJ = document.querySelector(".btn-maj");
+boutonMAJ.addEventListener("click", function(){
+    window.localStorage.removeItem("pieces");
+});
+
+await afficherGraphiqueAvis();
